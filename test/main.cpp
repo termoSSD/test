@@ -10,7 +10,7 @@ int main() {
     try 
     {
         // Читаємо замовлення з файлу
-        std::queue<Order> orders = readOrdersFromJSON("orders.json");
+        std::queue<Order> orders = readOrdersFromJSON("data.json");
 
         // Опрацьовуємо їх
         processOrders(stock, orders);
