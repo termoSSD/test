@@ -1,67 +1,85 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
 #include <fstream>
-#include <sstream>
+#include <vector>
+#include <queue>
+#include <map>
+#include <string>
+#include <exception>
 #include "json.hpp"
 
 using json = nlohmann::json;
 
+class OutOfStockException : public std::exception 
+{
+public:
+    const char* what() const noexcept override 
+    {
+        return "Error";
+    }
+};
+
 struct Order
 {
 	std::string name;
-	int count;
+    int quantity;
 };
 
-// Функція читання JSON файлу
-std::vector<Order> readJSON(const std::string& filename)
+std::queue<Order> readOrdersFromJSON(const std::string& filename) 
 {
-    std::vector<Order> students;
+    std::queue<Order> orders;
     std::ifstream file(filename);
 
-    if (!file.is_open())
+    if (file.is_open()) 
     {
-        std::cerr << "Error opening file for reading: " << filename << std::endl;
-        return students;
-    }
-
-    // Блок try-catch для перехоплення винятків (Exceptions)
-    try
-    {
-        json j_array;
-        file >> j_array;
-
-        for (const auto& item : j_array)
+        json j;
+        file >> j;
+        for (const auto& item : j) 
         {
-            Order order;
-
-            // Витягуємо дані за ключами
-            order.name = item["name"];
-            order.count = item["count"];
-
-            students.push_back(order);
+            orders.push({ item["name"], item["quantity"] });
         }
     }
-    catch (const json::parse_error& e)
+    return orders;
+}
+
+void processOrders(std::map<std::string, int>& stock, std::queue<Order>& orders) 
+{
+    while (!orders.empty()) 
     {
-        /*
-        Якщо JSON зламаний(немає дужки, коми тощо)
-        програма виведе цю помилку.
-        */
-        std::cerr << "JSON parsing error (Parse Error): " << e.what() << std::endl;
+        Order current = orders.front();
+
+        // Перевірка: чи є товар на складі
+        if (stock[current.name] < current.quantity) 
+            throw OutOfStockException();
+
+        // Оновлюємо склад та видаляємо замовлення з черги
+        stock[current.name] -= current.quantity;
+        orders.pop();
+
+        std::cout << "Operated: " << current.name << std::endl;
     }
-    catch (const json::type_error& e)
+}
+
+void saveToCSV(const std::string& filename, const std::map<std::string, int>& stock) 
+{
+    std::ofstream file(filename);
+
+    if (!file.is_open()) 
     {
-        // Якщо ми очікували число (вік), а в JSON там написаний текст
-        std::cerr << "JSON data type error (Type Error): " << e.what() << std::endl;
+        std::cerr << "Cant open file!" << std::endl;
+        return;
     }
+
+    // Заголовок
+    file << "Product,Quantity\n";
+
+    // Прохід по всьому масиву
+    for (const auto& item : stock)
+        file << item.first << "," << item.second << "\n";
+
 
     file.close();
-    return students;
+    std::cout << "Succesfull " << std::endl;
 }
 
-void writeCSV()
-{
-
-}
