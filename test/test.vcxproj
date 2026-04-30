@@ -131,6 +131,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\source\json.hpp" />
+    <ClInclude Include="func.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

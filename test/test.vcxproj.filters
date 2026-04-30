@@ -23,5 +23,11 @@
     <ClInclude Include="..\..\..\..\..\..\source\json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="func.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data.json" />
   </ItemGroup>
 </Project>

@@ -1,9 +1,4 @@
-#include <iostream>
-#include <vector>
-#include "json.hpp"
-
-using namespace std;
-using json = nlohmann::json;
+#include "func.hpp"
 
 int main()
 {
